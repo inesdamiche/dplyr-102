@@ -1,12 +1,13 @@
 ---
-title: "financial data analysis"
+title: "Financial data analysis"
+author: Damiche Inès
 format: html
 editor: visual
 ---
 
-## 
-```{r}
 
+```{r}
+#| message: FALSE
 here::i_am("dplyr-102.Rproj")
 library(here)
 library(vroom) #or readdr
@@ -15,8 +16,44 @@ library(tidyr)
 library(ggplot2)
 
 ```
-```{r}
-clients <-vroom(here("data/client.csv")) #on utilise l'argument locale pour rendre le dataset "international" (ex: point au lieu des virgules)
 
+# Data loading 
+```{r}
+#| message: FALSE
+clients <-vroom(here("data/client.csv")) #on utilise l'argument locale pour rendre le dataset "international" (ex: point au lieu des virgules)
+accounts <-  vroom(here("data/account.csv"))
+disp <- vroom(here("data/disp.csv"))
 ```
+
+# Joining data tables
+A collection of joining functions of the form `*_join`
+
+## Inner join 
+```{r}
+da <- inner_join(accounts, disp) #si y a deux colonnes qui sont pareils dans les deux table alors inner_join les combine, cf le message en rouge qui s'affiche = les deux table sont combinés grâce à la variable account_id
+```
+
+```{r}
+cda <- inner_join(da, clients) #it makes the join between district_it and clients_id but if the client's account is not in his district_id then the client disappear from the data set 
+```
+
+```{r}
+#we want to join only by clients_id 
+cda <- inner_join(da, clients, by = join_by(client_id), suffix= c("home", "_bank"))
+```
+
+## Home district versus bank district 
+
+```{r}
+home_diff_bank <- cda |> filter(district_idhome != district_id_bank) |> nrow()
+```
+
+We observe that `r home_diff_bank` clients live in a different district than their banks.
+
+
+
+
+
+
+
 
