@@ -45,14 +45,49 @@ cda <- inner_join(da, clients, by = join_by(client_id), suffix= c("home", "_bank
 ## Home district versus bank district 
 
 ```{r}
-home_diff_bank <- cda |> filter(district_idhome != district_id_bank) |> nrow()
+home_diff_bank <- cda |> filter(district_idhome != district_id_bank) |> nrow() #filtering only works to compare columns
 ```
 
 We observe that `r home_diff_bank` clients live in a different district than their banks.
 
+```{r}
+#we want to compare rows so we can't use filtering
+cda |> group_by(account_id) |> distinct(district_idhome) |> summarise(N=n()) |> filter(N>1)
+```
+
+## Gender gap 
+```{r}
+clients |> count(gender)
+```
+```{r}
+clients |> ggplot(aes(y=gender)) + geom_bar() + coord_flip()
+```
 
 
+```{r}
+cda |> 
+  count(gender, type)|> 
+  group_by(gender) |>
+  mutate(freq= n/sum(n))|>
+  select(-n)|>
+  pivot_wider(values_from = freq, names_from= type)
+```
+It seems that there is no gender effect. 
 
+```{r}
+cda |>
+  ggplot(aes(y = gender, fill=type)) + geom_bar()
+```
+
+```{r}
+cda |>
+  ggplot(aes(y = gender, fill=type)) + geom_bar(position = "fill") #frequency 
+```
+
+```{r}
+chisq.test(cda |> pull(gender),
+           cda |> pull(type))
+```
 
 
 
