@@ -1,0 +1,22 @@
+---
+title: "financial data analysis"
+format: html
+editor: visual
+---
+
+## 
+```{r}
+
+here::i_am("dplyr-102.Rproj")
+library(here)
+library(vroom) #or readdr
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+```
+```{r}
+clients <-vroom(here("data/client.csv")) #on utilise l'argument locale pour rendre le dataset "international" (ex: point au lieu des virgules)
+
+```
+
